@@ -11,6 +11,7 @@ local module = {}
 
 -- 导入模块
 local json = require("dlv.json")
+local inspect = require("inspect")
 
 -- 模块变量
 module.dlv_id = 0
@@ -48,19 +49,18 @@ function module.send(data, cb)
 	req_id = req_id + 1
 	req_cb[req_id] = cb
 	local msg = data:encode(req_id)
-	print("request " .. msg)
+	print("request " .. data.method)
 	vim.api.nvim_call_function("chansend", {module.chan_id, msg})
 end
 
 function module.recieve(job_id, data, event)
-	print("recieve " .. data[1])
 	if data[1] == nil then
 		return
 	end
 
 	o = json.decode(data)
 	if o["error"] ~= nil then
-		vim.api.nvim_err_writeln(data[1])
+		vim.api.nvim_err_writeln(inspect(o["error"]))
 		return
 	end
 

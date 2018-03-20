@@ -10,5 +10,19 @@
 local job = require("dlv.job")
 local dlv = require("dlv")
 
---job.connect("localhost", 10002)
-dlv.set_breakpoint("main.go:17")
+if arg == 1 then
+	job.connect("localhost", 10002)
+elseif arg == 2 then
+	dlv.set_breakpoint("main.main")
+elseif arg == 3 then
+	dlv.clear_point(1)
+elseif arg == 4 then
+	dlv.detach_ps()
+elseif arg == 5 then
+	dlv.attach_ps()
+elseif arg == 6 then
+	dlv.state()
+else
+	print("please input op")
+end
+
