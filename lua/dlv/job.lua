@@ -49,7 +49,7 @@ function module.send(data, cb)
 	req_id = req_id + 1
 	req_cb[req_id] = cb
 	local msg = data:encode(req_id)
-	print("request " .. data.method)
+	print("request ", msg)
 	vim.api.nvim_call_function("chansend", {module.chan_id, msg})
 end
 

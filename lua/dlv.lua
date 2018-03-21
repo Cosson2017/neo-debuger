@@ -12,17 +12,18 @@ local module = {}
 local job = require("dlv.job")
 local msg = require("dlv.msg")
 local json = require("dlv.json")
+local cmd = require("dlv.cmd")
 local inspect = require("inspect")
 
 local bpinfo = {}
 
 -- following is callback ------------------------------
 local function _set_breakpoint_cb(resp)
-	print("set breakpoint resp", inspect(resp))
+	print("set breakpoint resp", json.encode(resp))
 end
 
 local function _find_location_cb(resp)
-	print("set breakpoint resp", inspect(resp))
+	print("find loc resp", json.encode(resp))
 	local result = resp.result
 	if result == nil then
 		return
@@ -44,19 +45,19 @@ local function _find_location_cb(resp)
 end
 
 local function _clear_point_cb(resp)
-	print("clear point resp", inspect(resp))
+	print("clear point resp", json.encode(resp))
 end
 
 local function _attach_cb(resp)
-	print("attach resp", inspect(resp))
+	print("attach resp", json.encode(resp))
 end
 
 local function _detach_cb(resp)
-	print("detach resp", inspect(resp))
+	print("detach resp", json.encode(resp))
 end
 
 local function _state_cb(resp)
-	print("state resp", inspect(resp))
+	print("state resp", json.encode(resp))
 end
 
 -- following is request----------------------------------
@@ -81,13 +82,6 @@ end
 local function _print_breakpoint()
 end
 
--- 下一步
-local function _next()
-end
-
-local function _step()
-end
-
 -- 打印栈信息
 local function _print_stack()
 end
@@ -102,10 +96,6 @@ end
 
 -- 设置变量
 local function _set_var(key, value)
-end
-
--- 继续
-local function _continue()
 end
 
 -- 带完善
@@ -124,10 +114,66 @@ local function _state()
 	job.send(req, _state_cb)
 end
 
+--------continue------------------
+local function _continue_cb(resp)
+	print("continue resp", json.encode(resp))
+end
+
+local function _continue()
+	local req = msg.command:new(cmd.Continue)
+	job.send(req, _continue_cb)
+end
+----------------------------------
+--
+--halt/stop----------------------
+local function _stop_cb(resp)
+	print("stop ps resp", json.encode(resp))
+end
+
+local function _stop()
+	local req = msg.command:new(cmd.Halt)
+	job.send(req, _stop_cb)
+end
+---------------------------------
+--
+--step----------------------------
+local function _step_cb(resp)
+	print("step resp", json.encode(resp))
+end
+
+local function _step()
+	local req = msg.command:new(cmd.Step)
+	job.send(req, _step_cb)
+end
+----------------------------------
+--
+--next----------------------------
+local function _next_cb(resp)
+	print("next resp", json.encode(resp))
+end
+
+local function _next()
+	local req = msg.command:new(cmd.Next)
+	job.send(req, _next_cb)
+end
+----------------------------------
+--
+--step out---------------------------
+local function _step_out_cb(resp)
+	print("step out resp", json.encode(resp))
+end
+
+local function _step_out()
+	local req = msg.command:new(cmd.StepOut)
+	job.send(req, _step_out_cb)
+end
+-------------------------------------
+
 module.set_breakpoint 	= _set_breakpoint
 module.print_breakpoint = _print_breakpoint
-module.nxt 				= _next
+module.Next				= _next
 module.step 			= _step
+module.step_out			= _step_out
 module.print_stack 		= _print_stack
 module.print_var 		= _print_var
 module.print_locals 	= _print_locals_var
@@ -138,5 +184,6 @@ module.clear_all 		= _clear_all_point
 module.detach_ps 		= _detach
 module.attach_ps 		= _attach
 module.state 			= _state
+module.stop				= _stop
 
 return module

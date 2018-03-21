@@ -125,4 +125,19 @@ function module.state:new()
 	return o
 end
 
+module.command = {}
+function module.command:new(cmd)
+	local o = jsonRequestObject:new()
+	setmetatable(o, {__index = self})
+	o.method = "RPCServer.Command"
+	o.params = {
+		{
+			name = cmd,
+		}
+	}
+
+	o.encode = json_encode
+	return o
+end
+
 return module
